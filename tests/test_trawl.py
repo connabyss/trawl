@@ -191,6 +191,7 @@ def test_errors(engine, src, msg):
     ("use nosuchlib", "no library called `nosuchlib`"),
     ("1 2 sweep", "`sweep` needs the name of one of your words after it"),
     ("1 2 sweep dup", "`sweep` needs the name of one of your words after it"),
+    ("1 2 sweep 3", "`sweep` needs the name of one of your words after it"),
 ])
 def test_errors_found_before_running(src, msg):
     with pytest.raises(TrawlError, match=msg):
@@ -662,6 +663,21 @@ def trawl_cli(*args, cwd=None, progress=None):
         env["TRAWL_PROGRESS_AFTER"] = "0.05"  # and the line shows after 0.05 s of quiet, not 1 s
     return subprocess.run([sys.executable, "-m", "trawl", *args], capture_output=True, text=True, encoding="utf-8",
                           timeout=600, cwd=cwd, env=env)
+
+
+@pytest.mark.parametrize("word", ["prime", "spf", "factorings"])
+def test_sweep_builtin_explains_wrapper_in_both_engines(tmp_path, word):
+    prog = tmp_path / "builtin.trawl"
+    prog.write_text(f"1 1000 sweep {word} .\n", encoding="utf-8")
+    diagnostics = []
+    for command in ("run", "fast"):
+        result = trawl_cli(command, str(prog))
+        assert result.returncode != 0
+        diagnostics.append(result.stderr)
+    assert diagnostics[0] == diagnostics[1]
+    assert f"`{word}` is built in" in diagnostics[0]
+    assert f"`: {word}? {word} ;`" in diagnostics[0]
+    assert f"`sweep {word}?`" in diagnostics[0]
 
 
 def test_receipt_from_the_interpreter_verifies(tmp_path):

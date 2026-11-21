@@ -173,7 +173,9 @@ answer without running it. Pearls work through recursion, so
 leaves how many of them gave a nonzero answer. `name` must be one of your own words, it must
 turn n into exactly one number (its answer), and it must not touch the stack below n.
 Anything it prints comes out in n order. `lo >= hi` sweeps nothing and leaves 0. Both ends
-must lie between -2^62 and 2^62 - 1.
+must lie between -2^62 and 2^62 - 1. Built-ins that take one number and leave one,
+such as `prime`, can be wrapped in your own word: `: prime? prime ;` followed by
+`1 1000 sweep prime? .`.
 
 ```
 : sq? dup * 1 + prime ;
