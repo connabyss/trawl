@@ -207,7 +207,8 @@ class Parser:
             else:
                 body.append(Word(s, t))
         if opener is not None:
-            raise TrawlError(f"{where(opener)}: a `{opener.text}` was opened and the sea never closed it")
+            article = "an" if opener.text[0] in "aeiou" else "a"
+            raise TrawlError(f"{where(opener)}: {article} `{opener.text}` was opened and the sea never closed it")
         return body, None
 
     def definition(self, colon):
