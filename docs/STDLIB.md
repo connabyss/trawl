@@ -39,6 +39,8 @@ Working cells: -65535 .. -65280. Leave them alone in your programs.
 | `reverse` | `( x base -- y )` | digits read backwards |
 | `smooth` | `( n B -- flag )` | 1 if every prime factor of n is at most B |
 | `nextprime` | `( n -- p )` | the smallest prime above n |
+| `totient` | `( n -- phi )` | Euler's totient: how many of 1..n share no factor with n (n >= 1) |
+| `sigma` | `( n -- s )` | the sum of the divisors of n (n >= 1) |
 
 ## orbits
 

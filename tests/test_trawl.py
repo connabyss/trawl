@@ -122,6 +122,22 @@ def test_numbers_library(engine):
     assert engine(src) == " ".join(map(str, want)) + " \n"
 
 
+def test_numbers_totient_and_sigma(engine):
+    import math
+    ns = range(1, 201)
+    src = "use numbers " + " ".join(f"{n} totient . {n} sigma ." for n in ns)
+    want = []
+    for n in ns:
+        want.append(sum(1 for k in range(1, n + 1) if math.gcd(k, n) == 1))
+        want.append(sum(d for d in range(1, n + 1) if n % d == 0))
+    assert engine(src) == " ".join(map(str, want)) + " \n"
+    # a big prime, a big prime power and a big product, past the range above
+    big = "use numbers 1000003 totient . 1000003 sigma . 1048576 totient . 1048576 sigma . 3628800 totient . 3628800 sigma ."
+    assert engine(big) == "1000002 1000004 524288 2097151 829440 15334088 \n"
+    # the words leave the cells of the other words alone, and the stack below them
+    assert engine("use numbers 7 720 2 vp 12 totient 12 sigma .s") == "<7 4 4 28> \n"
+
+
 def test_orbits_library(engine):
     src = ": step dup * 31 % ; use orbits 5 orbit . . 2 orbit . . 3 orbit . . 5 lands . 3 4 steps ."
 

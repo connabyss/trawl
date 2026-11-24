@@ -14,6 +14,8 @@
 #   reverse  ( x base -- y )   the digits of x in that base, read backwards
 #   smooth   ( n B -- flag )   1 if every prime factor of n is at most B
 #   nextprime ( n -- p )       the smallest prime above n
+#   totient  ( n -- phi )      how many of 1..n share no factor with n (n >= 1)
+#   sigma    ( n -- s )        the sum of the divisors of n (n >= 1)
 
 use stdlib
 
@@ -84,3 +86,45 @@ use stdlib
   -65534 dig -65535 dig > 0 =  -65534 dig 0 >  * ;
 
 : nextprime 1 + dup prime 0 = [ drop 1 + dup prime 0 = ] drop ;
+
+# totient and sigma use cells -65531 .. -65528, which no other word here touches:
+#   -65531 what is left of n, -65530 the answer so far, -65529 the trial divisor p,
+#   -65528 (sigma only) 1 + p + p^2 + ... for the p being divided out
+# Both divide by p = 2, 3, 4, ... while p * p <= what is left. What is left at the end
+# is 1 or a prime.
+
+# a prime power p^k gives p^(k-1) * (p - 1): the last p divided out counts as p - 1
+: totient -65531 bury 1 -65530 bury 2 -65529 bury
+  -65529 dig -65529 dig * -65531 dig > 0 = [ drop
+    -65531 dig -65529 dig % 0 = if
+      -65531 dig -65529 dig / -65531 bury
+      -65530 dig
+      -65531 dig -65529 dig % 0 = if -65529 dig else -65529 dig 1 - then
+      * -65530 bury
+    else
+      -65529 dig 1 + -65529 bury
+    then
+    -65529 dig -65529 dig * -65531 dig > 0 = ] drop
+  -65531 dig 1 > if -65530 dig -65531 dig 1 - * -65530 bury then
+  -65530 dig ;
+
+# a prime power p^k gives 1 + p + ... + p^k
+: sigma -65531 bury 1 -65530 bury 2 -65529 bury 1 -65528 bury
+  -65529 dig -65529 dig * -65531 dig > 0 = [ drop
+    -65531 dig -65529 dig % 0 = if
+      -65531 dig -65529 dig / -65531 bury
+      -65528 dig -65529 dig * 1 + -65528 bury
+    else
+      -65530 dig -65528 dig * -65530 bury
+      1 -65528 bury
+      -65529 dig 1 + -65529 bury
+    then
+    -65529 dig -65529 dig * -65531 dig > 0 = ] drop
+  # the loop can stop with one more p left over: it belongs to the same prime power
+  -65531 dig -65529 dig = if
+    -65528 dig -65529 dig * 1 + -65528 bury
+    1 -65531 bury
+  then
+  -65530 dig -65528 dig * -65530 bury
+  -65531 dig 1 > if -65530 dig -65531 dig 1 + * -65530 bury then
+  -65530 dig ;
