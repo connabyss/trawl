@@ -230,7 +230,9 @@ def test_errors(engine, src, msg):
 
 @pytest.mark.parametrize("src,msg", [
     (": dup 1 ;", "word of the sea itself"),
-    ("1 [ 2", "was opened and the sea never closed it"),
+    ("1 [ 2", r"a `\[` was opened and the sea never closed it"),
+    ("1 if 2", "an `if` was opened and the sea never closed it"),
+    ("1 if 2 else 3", "an `if` was opened and the sea never closed it"),
     ("1 ]", "a stray `]`"),
     (": x 1", "never reached its `;`"),
     ("use nosuchlib", "no library called `nosuchlib`"),
@@ -1369,6 +1371,20 @@ def test_build_names_its_own_output_plainly(tmp_path):
         assert r.returncode != 0 and "pick a name for it with -o" in r.stderr and "`-o" not in r.stderr, r.stderr
     r = trawl_cli("build", str(tmp_path))
     assert r.returncode != 0 and "is a folder, not a Trawl program" in r.stderr, r.stderr
+
+
+def test_every_command_line_argument_has_help():
+    import argparse
+    from trawl.cli import make_parser
+    missing = []
+    for action in make_parser()._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            for name, sub in action.choices.items():
+                missing += [f"trawl {name} {'/'.join(a.option_strings) or a.dest}"
+                            for a in sub._actions if not a.help]
+    assert not missing, "these arguments print nothing in --help: " + ", ".join(missing)
+    build_help = trawl_cli("build", "--help").stdout
+    assert "also save the generated C to FILE" in build_help and "KEEP_C" not in build_help, build_help
 
 
 @pytest.mark.skipif(not os.path.exists("/dev/full"), reason="needs /dev/full")

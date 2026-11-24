@@ -305,35 +305,48 @@ def cmd_repl(args):
             sea.max_steps = limit
 
 
-def main(argv=None):
+def make_parser():
     p = argparse.ArgumentParser(prog="trawl", description="Trawl: a language for hunting patterns in the integers.")
     p.add_argument("--version", action="version", version=f"trawl {__version__}")
     sub = p.add_subparsers(dest="cmd")
     r = sub.add_parser("run", help="run with the reference interpreter")
-    r.add_argument("file"); r.add_argument("--max-steps", type=int, default=50_000_000)
+    r.add_argument("file", help="the program to run")
+    r.add_argument("--max-steps", type=int, default=50_000_000, metavar="N",
+                   help="give up after N steps (default: 50 million)")
     r.add_argument("--receipt", metavar="FILE", help="write a receipt of this run (check it with trawl verify)")
     r.set_defaults(fn=cmd_run)
     f = sub.add_parser("fast", help="build natively and run")
-    f.add_argument("file")
+    f.add_argument("file", help="the program to build and run")
     f.add_argument("-j", "--jobs", type=int, help="run each top-level sweep on this many cores (0 = all)")
     f.add_argument("--save", metavar="FILE", help="keep finished sweep blocks in FILE; the same command again resumes")
     f.add_argument("--receipt", metavar="FILE", help="write a receipt of this run (check it with trawl verify)")
     f.set_defaults(fn=cmd_fast)
     v = sub.add_parser("verify", help="re-run a receipt and check the output matches")
-    v.add_argument("receipt")
+    v.add_argument("receipt", help="the receipt to check, written by --receipt")
     v.add_argument("--engine", choices=["run", "fast"], help="engine to re-run on (default: the other one)")
     v.add_argument("--save", metavar="FILE", help="the run's save file: replay it, re-running --sample blocks")
     v.add_argument("--sample", type=int, default=0, metavar="N", help="with --save: blocks of each sweep to re-run")
     v.add_argument("--seed", type=int, help="with --save: pick the same blocks again")
-    v.add_argument("--max-steps", type=int, default=50_000_000)
+    v.add_argument("--max-steps", type=int, default=50_000_000, metavar="N",
+                   help="when re-running on the reference interpreter: give up after N steps (default: 50 million)")
     v.set_defaults(fn=cmd_verify)
     b = sub.add_parser("build", help="build a native program")
-    b.add_argument("file"); b.add_argument("-o", "--output"); b.add_argument("--keep-c")
+    b.add_argument("file", help="the program to build")
+    b.add_argument("-o", "--output", metavar="FILE",
+                   help="where to write the program (default: the program's name without its extension, "
+                        "plus .exe on Windows)")
+    b.add_argument("--keep-c", metavar="FILE", help="also save the generated C to FILE")
     b.set_defaults(fn=cmd_build)
     c = sub.add_parser("c", help="print the generated C")
-    c.add_argument("file"); c.set_defaults(fn=cmd_c)
+    c.add_argument("file", help="the program to turn into C")
+    c.set_defaults(fn=cmd_c)
     q = sub.add_parser("repl", help="interactive sea")
     q.set_defaults(fn=cmd_repl)
+    return p
+
+
+def main(argv=None):
+    p = make_parser()
     for name in ("stdout", "stderr"):  # started with that stream closed (`trawl run x >&-`): write nowhere
         if getattr(sys, name) is None:
             setattr(sys, name, open(os.devnull, "w", encoding="utf-8"))
