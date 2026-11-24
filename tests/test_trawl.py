@@ -138,6 +138,35 @@ def test_numbers_totient_and_sigma(engine):
     assert engine("use numbers 7 720 2 vp 12 totient 12 sigma .s") == "<7 4 4 28> \n"
 
 
+def test_numbers_ndivisors_and_mobius(engine):
+    def mobius(n):
+        m, p = 1, 2
+        while n > 1:
+            if n % p == 0:
+                n //= p
+                if n % p == 0:
+                    return 0
+                m = -m
+            else:
+                p += 1
+        return m
+
+    ns = range(1, 201)
+    src = "use numbers " + " ".join(f"{n} ndivisors . {n} mobius ." for n in ns)
+    want = []
+    for n in ns:
+        want.append(sum(1 for d in range(1, n + 1) if n % d == 0))
+        want.append(mobius(n))
+    assert engine(src) == " ".join(map(str, want)) + " \n"
+    # past the range above: a highly composite number, a big prime, a big prime power,
+    # a big square-free product and a big number with a square factor
+    big = ("use numbers 720720 ndivisors . 1000003 ndivisors . 1048576 ndivisors . "
+           "1000003 mobius . 1048576 mobius . 510510 mobius . 9699690 mobius . 3628800 mobius .")
+    assert engine(big) == "240 2 21 -1 0 -1 1 0 \n"
+    # the words leave the cells of the other words alone, and the stack below them
+    assert engine("use numbers 7 720 2 vp 12 ndivisors 12 mobius .s") == "<7 4 6 0> \n"
+
+
 def test_orbits_library(engine):
     src = ": step dup * 31 % ; use orbits 5 orbit . . 2 orbit . . 3 orbit . . 5 lands . 3 4 steps ."
 

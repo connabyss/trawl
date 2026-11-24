@@ -41,6 +41,8 @@ Working cells: -65535 .. -65280. Leave them alone in your programs.
 | `nextprime` | `( n -- p )` | the smallest prime above n |
 | `totient` | `( n -- phi )` | Euler's totient: how many of 1..n share no factor with n (n >= 1) |
 | `sigma` | `( n -- s )` | the sum of the divisors of n (n >= 1) |
+| `ndivisors` | `( n -- d )` | how many divisors n has (n >= 1): `12 ndivisors` is 6 |
+| `mobius` | `( n -- m )` | the Möbius function (n >= 1): 0 if a square above 1 divides n, otherwise 1 or -1 for an even or odd number of prime factors |
 
 ## orbits
 
