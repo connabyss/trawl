@@ -14,7 +14,8 @@
 # -7 lo  -8 hi  -9 sieve bound  -10 prime index  -11 p  -12 log p  -13 q  -14 x
 # -15 threshold  -16 run  -17 i  -18 answer  -19 n  -20 offset (window - lo)
 # ---- tables on the seabed
-# 1000000+   composite flags (for finding primes)
+# 6000000+   composite flags (for finding primes), past the window, so they never run
+#            into the prime table: the prime limit passes 1000000 once END passes 5*10^11
 # 2000000+   the primes, in order
 # 3000000+   floor(4 log2 p) for each prime
 # 4000000+   the sieve window
@@ -47,13 +48,13 @@
 # primes: sieve of Eratosthenes up to the prime limit
 : primes 0 -6 bury 2 -14 bury
   1 [ drop
-    -14 dig 1000000 + dig 0 = if
+    -14 dig 6000000 + dig 0 = if
       -14 dig 2000000 -6 dig + bury
       -14 dig log4 3000000 -6 dig + bury
       -6 dig 1 + -6 bury
       -14 dig -14 dig * -13 bury
       -13 dig -5 dig > 0 = [ drop
-        1 -13 dig 1000000 + bury
+        1 -13 dig 6000000 + bury
         -13 dig -14 dig + -13 bury
         -13 dig -5 dig > 0 = ] drop
     then

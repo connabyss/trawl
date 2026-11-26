@@ -647,6 +647,15 @@ def test_a343507_search_stays_inside_its_range(native):
     assert native(src, str(path)) == "0 0 208 208 \n"
 
 
+# Past END of about 5*10^11 the prime sieve needs flags above 1000000, and they used to
+# land on the prime table at 2000000+: the search never finished. a(12) sits up there.
+@needs_cc
+def test_a343507_search_works_past_the_prime_table(native):
+    path = ROOT / "examples" / "a343507.trawl"
+    src = path.read_text(encoding="utf-8") + "\n12 1490709825000 1490709826000 search ."
+    assert native(src, str(path)) == "1490709825264 \n"
+
+
 ERDOS = ROOT / "examples" / "erdos727"
 
 
