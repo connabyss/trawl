@@ -48,7 +48,7 @@ Their C searches found three more terms, and each was checked again with separat
 |---|---|---|---|
 | a(10) | 19295451536 | yes | yes, in 8 minutes |
 | a(11) | 91328826321 | yes | yes, in 33 minutes |
-| a(12) | 1490709825264 | yes | not run yet |
+| a(12) | 1490709825264 | yes | yes, in about 5 hours on 6 cores |
 
 **These terms are now in the OEIS.** connabyss submitted them, and OEIS editors reviewed and
 approved them on November 15, 2026: see [A343507](https://oeis.org/A343507).
@@ -56,7 +56,11 @@ approved them on November 15, 2026: see [A343507](https://oeis.org/A343507).
 Trawl is Tide grown into a real language: a written spec, a test suite, a standard library
 and a native compiler. The search in [examples/a343507.trawl](examples/a343507.trawl) finds
 a(10) and a(11) on its own: add `10 2935782889 19300000000 search .` at its bottom and run it with
-`trawl fast` (about 8 minutes on one core). The open problem itself is in
+`trawl fast` (about 8 minutes on one core). For a(12), the range from a(11) to 1490800000000 was split into
+six pieces, one per core of an i5-10600K, each run with `trawl fast --receipt`: the five lower pieces printed 0
+and the top one printed 1490709825264 (about 27 core-hours in all). That run also found a bug: past about
+5·10^11 the example's prime sieve wrote over its own prime table and looped forever (fixed in
+[#37](https://github.com/connabyss/trawl/pull/37)). The open problem itself is in
 [examples/erdos727](examples/erdos727): Johan Land's k = 3 family and a k = 4 family found by
 a research Claude (a lead, not a proof). On the same slice of the search, it runs about 3 to 4 times slower
 than the hand-written C, 8 to 10 times faster than plain Python (it varies by machine), and 170 times faster than the
