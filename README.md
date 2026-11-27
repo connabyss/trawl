@@ -1,10 +1,12 @@
 # Trawl
 
-**A small language for hunting patterns in the integers.** Iterate a rule, watch where it
+**A small language for searching for patterns in the integers.** Iterate a rule, watch where it
 goes, find the loops, search for the first number with a property. Every number is an exact
-whole number of any size. Loops prove when they are stuck, one word hears when the state
+whole number of any size. Loops prove when they are stuck, one word detects when the state
 repeats, and searches can guess and rewind. A native compiler (through C) makes the long
 searches fast.
+
+<p align="center"><img src="media/search.svg" width="760" alt="trawl fast prints the first eight terms of OEIS A343507, from Erdős problem 727, in about 10 seconds of real time. a(10) to a(12) were found in November 2026 and are now in the OEIS."></p>
 
 ## Try it in 30 seconds
 
@@ -164,6 +166,9 @@ it works, and whenever `trawl run` or `trawl fast` goes quiet for more than a se
 terminal shows a `still checking... 1:12` line that ticks every second, then `~ done in 2:05`
 at the end. The line goes to stderr and only to a terminal, so piped output and receipts are
 exactly what the program printed (`TRAWL_PROGRESS=0` turns it off).
+
+To check one of the results above yourself, or to rerun someone else's check, open a case:
+[CASES.md](CASES.md) has the steps and the list so far.
 
 ## Tests
 
