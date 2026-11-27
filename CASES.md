@@ -30,4 +30,4 @@ closes as Resolved once the reason is written down.
 
 | Case | Claim | Opened by | Reproduced by | Status |
 |---|---|---|---|---|
-| [#?](https://github.com/connabyss/trawl/issues) | The family n = 8t^4 − 18t^2 + 6 gives k = 4 in Erdős problem 727 for exactly 53 values of t below 2000. Rerun: `trawl fast examples/erdos727/run_k4.trawl`, then check with your own code (Legendre's formula is enough). | connabyss | waiting for a rerun | Open |
+| [#40](https://github.com/connabyss/trawl/issues/40) | The family n = 8t^4 − 18t^2 + 6 gives k = 4 in Erdős problem 727 for exactly 53 values of t below 2000. Rerun: `trawl fast examples/erdos727/run_k4.trawl`, then check with your own code (Legendre's formula is enough). | connabyss | waiting for a rerun | Open |
