@@ -1451,3 +1451,11 @@ def test_circular_use_names_the_use_that_closes_it(tmp_path):
 def test_sweep_shape_never_says_minus_one(native):
     want, got = both(native, ": z drop drop ; 5 1 3 sweep z")
     assert "it left 0 numbers" in want and got == want
+
+
+def test_every_workflow_sets_token_permissions():
+    # CodeQL alert "Workflow does not contain permissions" (2026-11-27): without a top-level permissions block,
+    # a workflow's token gets the repo's default rights. Each workflow must say what it needs.
+    for wf in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
+        text = wf.read_text(encoding="utf-8")
+        assert re.search(r"^permissions:", text, re.M), f"{wf.name} has no top-level permissions block"

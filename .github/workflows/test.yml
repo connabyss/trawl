@@ -3,6 +3,9 @@ on:
   push:
     branches: [main]
   pull_request:
+# Read-only token: the tests only need to check out the code.
+permissions:
+  contents: read
 jobs:
   test:
     strategy:
