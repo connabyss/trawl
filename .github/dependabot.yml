@@ -1,4 +1,6 @@
-# Dependabot: keeps the GitHub Actions in .github/workflows and the playground test's Playwright up to date.
+# Dependabot (minor and patch updates are grouped and safe to auto-merge once the tests pass;
+# major updates come in a separate "-major" PR to review by hand):
+# It keeps the GitHub Actions in .github/workflows and the playground test's Playwright up to date.
 # Quiet on purpose: once a week, and each kind's updates come together in one pull request.
 # Security fixes (turned on in Settings > Advanced Security) still come as soon as they're out.
 # Trawl itself has no runtime dependencies, so there is no pip entry.
@@ -17,6 +19,10 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
+      actions-major:   # breaking versions come in their own PR: review it by hand, don't auto-merge
+        patterns: ["*"]
+        update-types: ["major"]
 
   - package-ecosystem: npm
     directory: "/tests/playground"
@@ -25,9 +31,13 @@ updates:
       day: monday
       time: "06:00"
       timezone: America/New_York
-    open-pull-requests-limit: 1
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "test"
     groups:
       playground-tests:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
+      playground-tests-major:   # breaking versions come in their own PR: review it by hand, don't auto-merge
+        patterns: ["*"]
+        update-types: ["major"]
