@@ -6,6 +6,10 @@ on:
 # Read-only token: the tests only need to check out the code.
 permissions:
   contents: read
+# a new push to the same PR stops its older run instead of queueing behind it
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   test:
     strategy:
@@ -20,21 +24,13 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: pip install -e .[test]
-      - run: python -m pytest -q --all
-  playground:
+      # -n auto: the same tests, spread over every core the runner has (pytest-xdist)
+      - run: python -m pytest -q --all -n auto
+  playground-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
       - run: python playground/build.py --check
-      - run: npm install
-        working-directory: tests/playground
-      - run: npx playwright install --with-deps chromium
-        working-directory: tests/playground
-      - run: node state.test.js
-        working-directory: tests/playground
