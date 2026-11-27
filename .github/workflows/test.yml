@@ -26,11 +26,41 @@ jobs:
       - run: pip install -e .[test]
       # -n auto: the same tests, spread over every core the runner has (pytest-xdist)
       - run: python -m pytest -q --all -n auto
-  playground-build:
+  playground:
+    # The playground clicked through in a real browser (about 4 minutes). On a PR it only runs when
+    # something it shows can change: the page, the interpreter and libraries it bundles, the examples,
+    # or its own test. Otherwise the job passes in seconds, so it can stay a required check.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
       - run: python playground/build.py --check
+      - id: changed
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.base_ref }}
+        run: |
+          if [ "$EVENT" != "pull_request" ] || git diff --name-only "origin/$BASE...HEAD" \
+               | grep -qE '^(playground/|trawl/|examples/|tests/playground/|\.github/workflows/test\.yml$)'; then
+            echo "browser=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nothing the playground shows changed, so the browser test is skipped."
+          fi
+      - if: steps.changed.outputs.browser == 'yes'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - if: steps.changed.outputs.browser == 'yes'
+        run: npm install
+        working-directory: tests/playground
+      - if: steps.changed.outputs.browser == 'yes'
+        run: npx playwright install --with-deps chromium
+        working-directory: tests/playground
+      - if: steps.changed.outputs.browser == 'yes'
+        run: node state.test.js
+        working-directory: tests/playground
