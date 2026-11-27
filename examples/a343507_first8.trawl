@@ -1,0 +1,11 @@
+# The first eight terms of OEIS A343507, each searched from scratch: prints n and a(n).
+# About 10 seconds with `trawl fast`. The README's demo clip is this run, in real time.
+use a343507
+1 dup . 0 3000000000 search . 10 emit
+2 dup . 0 3000000000 search . 10 emit
+3 dup . 0 3000000000 search . 10 emit
+4 dup . 0 3000000000 search . 10 emit
+5 dup . 0 3000000000 search . 10 emit
+6 dup . 0 3000000000 search . 10 emit
+7 dup . 0 3000000000 search . 10 emit
+8 dup . 0 3000000000 search . 10 emit
