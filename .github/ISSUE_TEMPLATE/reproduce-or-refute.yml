@@ -1,0 +1,58 @@
+name: Reproduce or refute
+description: "State one claim about Trawl or a result made with it, with steps anyone can rerun. For example: a search result, an OEIS term, or a benchmark number."
+title: "Claim: "
+labels: ["case"]
+body:
+  - type: markdown
+    attributes:
+      value: "One claim per issue. A case counts as Reproduced only after someone other than you reruns it. See [CASES.md](https://github.com/connabyss/trawl/blob/main/CASES.md)."
+  - type: textarea
+    id: claim
+    attributes:
+      label: Claim
+      description: The one thing you say is true (or false), in a sentence.
+      placeholder: "n = 8t^4 - 18t^2 + 6 gives k = 4 for exactly 53 values of t below 2000."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: The exact command, input or minimal program, cut down as small as it goes.
+      placeholder: "trawl fast examples/erdos727/run_k4.trawl"
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What the claim says should happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: What happened when you ran the steps, pasted as printed.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: Version, OS, and the commit or release you ran.
+      placeholder: "trawl 0.x, Ubuntu 24.04, gcc 13, commit abc1234"
+    validations:
+      required: true
+  - type: input
+    id: other
+    attributes:
+      label: Rerunning someone else's case?
+      description: Link it here, and your result counts toward its Reproduced or refuted status.
+  - type: input
+    id: credit
+    attributes:
+      label: Name for credit
+      description: Your GitHub name is used if you leave this empty.
